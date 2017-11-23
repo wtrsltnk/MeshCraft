@@ -1,0 +1,5 @@
+LIBRARY SMDFile.dll
+EXPORTS
+	CreatePlugin                @2 PRIVATE          ; object creation
+	DeletePlugin                @3 PRIVATE          ; object deletion
+

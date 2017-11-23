@@ -1,0 +1,608 @@
+#include"simple_format.h"
+
+
+//*************************************************************************//
+//*************************************************************************//
+// Vertex
+//*************************************************************************//
+//*************************************************************************//
+int Vertex::m_nNextID = 0;
+
+Vertex::Vertex()
+{
+	m_nID = m_nNextID++;
+	this->m_vPosition.Fill(0.0f, 0.0f, 0.0f);
+	this->m_vNormal.Fill(1.0f, 0.0f, 0.0f);
+}
+
+Vertex::Vertex(Vector position)
+{
+	m_nID = m_nNextID++;
+	this->m_vPosition = position;
+	this->m_vNormal.Fill(1.0f, 0.0f, 0.0f);
+}
+
+Vertex::Vertex(Vector position, Vector normal)
+{
+	m_nID = m_nNextID++;
+	this->m_vPosition = position;
+	this->m_vNormal = normal;
+}
+
+Vertex::~Vertex()
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Vertex::SetPosition(Vector position)
+{
+	this->m_vPosition = position;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Vertex::SetNormal(Vector normal)
+{
+	this->m_vNormal = normal;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+Vector Vertex::GetPosition()
+{
+	return m_vPosition;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+Vector Vertex::GetNormal()
+{
+	return this->m_vNormal;
+}
+
+//*************************************************************************//
+//*************************************************************************//
+// Triangle
+//*************************************************************************//
+//*************************************************************************//
+int Triangle::m_nNextID = 0;
+
+Triangle::Triangle()
+{
+	m_nID = m_nNextID++;
+}
+
+Triangle::Triangle(int vertices[])
+{
+	m_nID = m_nNextID++;
+	for (int i = 0; i < 3; i++)
+		this->m_nVertices[i] = vertices[i];
+}
+
+Triangle::~Triangle()
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Triangle::SetVertices(int vertices[])
+{
+	for (int i = 0; i < 3; i++)
+		this->m_nVertices[i] = vertices[i];
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Triangle::SetUVVertex(int vertex, float x, float y)
+{
+	if ( vertex >= 3 || vertex < 0 )
+		return;
+
+	m_UVMap[vertex].x = x;
+	m_UVMap[vertex].y = y;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Triangle::GetVertices(int vertices[3])
+{
+	for (int i = 0; i < 3; i++)
+		vertices[i] = this->m_nVertices[i];
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Triangle::GetVertexIndexAt(int index)
+{
+	if ( index >= 3 || index < 0 )
+		return -1;
+
+	return this->m_nVertices[index];
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+uv* Triangle::GetUVMap(int index)
+{
+	if ( index >= 3 || index < 0 )
+		return NULL;
+
+	return &m_UVMap[index];
+}
+
+//*************************************************************************//
+//*************************************************************************//
+// Material
+//*************************************************************************//
+//*************************************************************************//
+int Material::m_nNextID = 0;
+
+Material::Material()
+{
+	m_nID = m_nNextID++;
+	this->m_cAmbient.Set(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cDiffuse.Set(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cSpecular.Set(1.0f, 1.0f, 1.0f, 0.0f);
+	this->m_cEmissive.Set(0.0f, 0.0f, 0.0f, 0.0f);
+
+	this->m_fShininess = 100.0f;
+	this->m_fTransparency = 0.0f;
+
+	this->m_strTexture = "";
+	this->m_nTextureIndex = 0;
+}
+
+Material::Material(string texture)
+{
+	m_nID = m_nNextID++;
+	this->m_cAmbient.Set(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cDiffuse.Set(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cSpecular.Set(0.0f, 0.0f, 0.0f, 0.0f);
+	this->m_cEmissive.Set(0.0f, 0.0f, 0.0f, 0.0f);
+
+	this->m_fShininess = 0.0f;
+	this->m_fTransparency = 0.0f;
+
+	SetTexture(texture);
+	this->m_nTextureIndex = 0;
+}
+
+Material::~Material()
+{
+	CTextureManager::GetInstance()->ClearTexture(m_nTextureIndex);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetTexture(string texture)
+{
+	m_strTexture = texture;
+	m_nTextureIndex = CTextureManager::GetInstance()->AddTexture(texture.c_str());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetAmbient(float R, float G, float B, float A)
+{
+	this->m_cAmbient.Set(R, G, B, A);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetDiffuse(float R, float G, float B, float A)
+{
+	this->m_cDiffuse.Set(R, G, B, A);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetSpecular(float R, float G, float B, float A)
+{
+	this->m_cSpecular.Set(R, G, B, A);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetEmissive(float R, float G, float B, float A)
+{
+	this->m_cEmissive.Set(R, G, B, A);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetShininess(float shininess)
+{
+	this->m_fShininess = shininess;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Material::SetTransparency(float transparency)
+{
+	this->m_fTransparency = transparency;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+float* Material::GetAmbient()
+{
+	return m_cAmbient.GetP();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+float* Material::GetDiffuse()
+{
+	return m_cDiffuse.GetP();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+float* Material::GetSpecular()
+{
+	return m_cSpecular.GetP();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+float* Material::GetEmissive()
+{
+	return m_cEmissive.GetP();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+float Material::GetShininess()
+{
+	return m_fShininess;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+string Material::GetTextureName()
+{
+	return m_strTexture;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Material::GetTextureIndex()
+{
+	return m_nTextureIndex;
+}
+
+void Material::Use()
+{
+	if (m_nTextureIndex > 0)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, m_nTextureIndex);
+	}
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT, m_cAmbient.GetP());
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, m_cDiffuse.GetP());
+	glMaterialfv(GL_FRONT, GL_SPECULAR, m_cSpecular.GetP());
+	glMaterialfv(GL_FRONT, GL_EMISSION, m_cEmissive.GetP());
+
+	glMaterialf(GL_FRONT, GL_SHININESS, m_fShininess);
+}
+
+//*************************************************************************//
+//*************************************************************************//
+// Mesh
+//*************************************************************************//
+//*************************************************************************//
+int Mesh::m_nNextID = 0;
+
+Mesh::Mesh()
+{
+	m_nID = m_nNextID++;
+}
+
+Mesh::~Mesh()
+{
+	if ( m_pVertices.size() > 0 )
+	{
+		m_pVertices.clear();
+	}
+	if ( m_pTriangles.size() > 0 )
+	{
+		m_pTriangles.clear();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Mesh::AddVertex(Vector position)
+{
+	Vertex* v = new Vertex();
+
+	v->SetPosition(position);
+	m_pVertices.push_back(v);
+
+	return v->GetID();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Mesh::AddTriangle(Vector vertex1, Vector vertex2, Vector vertex3)
+{
+	Triangle* t = new Triangle();
+	int vertices[3];
+
+	vertices[0] = AddVertex(vertex1);
+	vertices[1] = AddVertex(vertex2);
+	vertices[2] = AddVertex(vertex3);
+
+	t->SetVertices(vertices);
+
+	m_pTriangles.push_back(t);
+	return t->GetID();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+void Mesh::SetMaterial(int texture)
+{
+	m_nMaterial = texture;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+Vertex* Mesh::GetVertexAt(int index)
+{
+	for (int i = 0; i < m_pVertices.size(); i++)
+	{
+		if (m_pVertices[i]->GetID() == index)
+			return m_pVertices[i];
+	}
+	return NULL;
+}
+	
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+Triangle* Mesh::GetTriangleAt(int index)
+{
+	for (int i = 0; i < m_pTriangles.size(); i++)
+	{
+		if (m_pTriangles[i]->GetID() == index)
+			return m_pTriangles[i];
+	}
+	return NULL;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Mesh::GetMaterial()
+{
+	return m_nMaterial;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Mesh::GetNumVertices()
+{
+	return m_pVertices.size();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Mesh::GetNumTriangles()
+{
+	return m_pTriangles.size();
+}
+
+//*************************************************************************//
+//*************************************************************************//
+// Mesh
+//*************************************************************************//
+//*************************************************************************//
+Model::Model()
+{
+}
+
+Model::~Model()
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Model::AddMesh()
+{
+	Mesh* m = new Mesh();
+
+	m_pMeshes.push_back(m);
+
+	return m->GetID();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Model::AddMesh(int texture)
+{
+	Mesh* m = new Mesh();
+
+	m->SetMaterial(texture);
+	m_pMeshes.push_back(m);
+
+	return m->GetID();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Model::AddMaterial()
+{
+	Material* m = new Material();
+
+	m_pMaterials.push_back(m);
+
+	return m->GetID();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Model::AddMaterial(string texture)
+{
+	Material* m = new Material();
+
+	m->SetTexture(texture);
+	m_pMaterials.push_back(m);
+
+	return m->GetID();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+Mesh* Model::GetMesh(int index)
+{
+	for (int i = 0; i < m_pMeshes.size(); i++)	
+	{
+		if (m_pMeshes[i]->GetID() == index)
+			return m_pMeshes[i];
+	}
+	return NULL;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+Material* Model::GetMaterial(int index)
+{
+	for (int i = 0; i < m_pMaterials.size(); i++)	
+	{
+		if (m_pMaterials[i]->GetID() == index)
+			return m_pMaterials[i];
+	}
+	return NULL;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Model::GetNumMesh()
+{
+	return m_pMeshes.size();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+//////////////////////////////////////////////////////////////////////////////
+int Model::GetNumMaterial()
+{
+	return m_pMaterials.size();
+}

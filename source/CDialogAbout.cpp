@@ -1,0 +1,75 @@
+#include "CDialogAbout.h"
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Constructor en Deconstructor
+///////////////////////////////////////////////////////////////////////////////////////////
+CDialogAbout::CDialogAbout()
+{
+	m_wResourceDialog = IDD_ABOUT;
+}
+
+CDialogAbout::~CDialogAbout()
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+///////////////////////////////////////////////////////////////////////////////////////////
+void CDialogAbout::Init(HWND hOwner, HINSTANCE hInstance)
+{
+	this->m_hOwner = hOwner;
+	this->m_hInstance = hInstance;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+///////////////////////////////////////////////////////////////////////////////////////////
+int CDialogAbout::Show()
+{
+	return DialogBox(m_hInstance, MAKEINTRESOURCE(m_wResourceDialog), m_hOwner, (DLGPROC)AboutProc);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Purpose : 
+// Input   : 
+// Output  : 
+///////////////////////////////////////////////////////////////////////////////////////////	
+BOOL CDialogAbout::AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+		{
+
+			break;
+		}
+
+	case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			RECT rc;
+			HDC hDC = ::BeginPaint(hDlg, &ps);
+			::GetClientRect(hDlg, &rc);
+			::Rectangle(hDC, rc.left-1, rc.top-1, rc.right+1, rc.bottom+1);
+			::EndPaint(hDlg, &ps);
+			break;
+		}
+
+	case WM_CLOSE:
+		{
+			EndDialog( hDlg, IDOK );
+			break;
+		}
+
+	case WM_LBUTTONUP:
+		{
+			EndDialog( hDlg, IDOK );
+			break;
+		}
+	}
+	return FALSE;
+}
