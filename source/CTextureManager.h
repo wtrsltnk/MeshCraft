@@ -5,15 +5,13 @@
 #include <stdio.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
-#include <gl\glaux.h>
 #include <string>
 using namespace std;
 
 class CTextureManager
 {
 protected:
-	CTextureManager();
-	AUX_RGBImageRec* LoadBMP(string filename);
+    CTextureManager();
 
 	static CTextureManager* m_pInstance;
 

@@ -28,7 +28,7 @@ CBaseView::CBaseView()
 	this->m_hWnd				= NULL;
 	this->m_hParent				= NULL;
 	this->m_hInstance			= NULL;
-	this->m_nId					= NULL;
+    this->m_nId					= 0;
 	this->m_dwWindowStyle		= WS_VISIBLE | WS_CHILD | WS_BORDER;
 	this->m_dwExWindowStyle		= WS_EX_WINDOWEDGE;
  	this->m_dwCreationFlags		= SW_SHOW;

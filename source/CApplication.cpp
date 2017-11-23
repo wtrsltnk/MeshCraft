@@ -40,7 +40,7 @@ LRESULT CApplication::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 			m_pToolManager = CToolManager::GetInstance();
 			m_pToolManager->SelectTool(tool_camera);
 			m_pPluginManager = CPluginManager::GetInstance();
-			m_pPluginManager->LoadPlugins("../Plugins/bin");
+            m_pPluginManager->LoadPlugins("../Plugins/bin");
 			FillPluginMenu();
 
 			m_ViewManager.InitViews(hWnd, m_hInstance);

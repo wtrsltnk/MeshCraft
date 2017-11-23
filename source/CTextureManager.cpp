@@ -1,4 +1,5 @@
 #include "CTextureManager.h"
+#include <stb_image.h>
 
 CTextureManager*	CTextureManager::m_pInstance			= NULL;
 
@@ -33,50 +34,23 @@ CTextureManager* CTextureManager::GetInstance()
 ///////////////////////////////////////////////////////////////////////////////////////////
 int CTextureManager::AddTexture(string filename)
 {
-	AUX_RGBImageRec *pImage;
 	GLuint index = 0;
+    int x,y,n;
+    unsigned char *data = stbi_load(filename.c_str(), &x, &y, &n, 3);
 
-	pImage = LoadBMP( filename );
-
-	if ( pImage != NULL && pImage->data != NULL )
+    if (data != nullptr)
 	{
 		glGenTextures(1, &index);
 
 		glBindTexture(GL_TEXTURE_2D, index);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, pImage->sizeX, pImage->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, pImage->data);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-		free(pImage->data);
-		free(pImage);
-	}
+        stbi_image_free(data);
+    }
 
 	return index;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// Purpose : 
-// Input   : 
-// Output  : 
-///////////////////////////////////////////////////////////////////////////////////////////
-AUX_RGBImageRec* CTextureManager::LoadBMP(string filename)
-{
-	FILE *File = NULL;
-
-	if (!filename.c_str())
-	{
-		return NULL;
-	}
-
-	File = fopen(filename.c_str(), "r");
-
-	if (File)
-	{
-		fclose(File);
-		return auxDIBImageLoad(filename.c_str());
-	}
-
-	return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
